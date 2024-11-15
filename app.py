@@ -6,6 +6,10 @@ import atexit
 import logging
 import time # timezone 세팅을 위해 import
 
+# 서버 시간을 서울로 설정
+os.environ["TZ"] = "Asia/Seoul"
+time.tzset()
+
 from route.tool.func import *
 from route import *
 
@@ -925,10 +929,6 @@ signal.signal(signal.SIGINT, signal_handler)
 atexit.register(terminate_golang)
 
 if __name__ == "__main__":
-    # 서버 시간을 서울로 설정
-    os.environ["TZ"] = "Asia/Seoul"
-    time.tzset()
-    
     waitress.serve(
         app,
         host = server_set['host'],
