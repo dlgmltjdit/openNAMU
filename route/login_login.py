@@ -47,8 +47,17 @@ def login_login_2():
 
                 ua_plus(conn, user_id, ip, user_agent, get_time())
 
-                return redirect(conn, '/user')
+                # 이전 페이지 URL 가져오기
+                redirect_url = flask.session.get('redirect_url', '/user')
+                # 보안 검증: 외부 URL은 기본값('/user')로 변경
+                if not is_safe_url(redirect_url):
+                    redirect_url = '/user'
+
+                return redirect(conn, redirect_url)
         else:
+            # GET 요청 시, 현재 URL 저장
+            flask.session['redirect_url'] = flask.request.referrer
+
             return easy_minify(conn, flask.render_template(skin_check(conn),
                 imp = [get_lang(conn, 'login'), wiki_set(conn), wiki_custom(conn), wiki_css([0, 0])],
                 data =  '''
@@ -66,3 +75,10 @@ def login_login_2():
                         ''',
                 menu = [['user', get_lang(conn, 'return')]]
             ))
+
+# 보안 검증 함수
+def is_safe_url(target):
+    from urllib.parse import urlparse
+    ref_url = urlparse(flask.request.host_url)
+    test_url = urlparse(target)
+    return test_url.scheme in ('http', 'https') and ref_url.netloc == test_url.netloc
