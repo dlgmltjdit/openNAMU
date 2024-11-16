@@ -47,8 +47,6 @@ def login_login_2():
 
                 ua_plus(conn, user_id, ip, user_agent, get_time())
 
-                redirect_url = session.get('redirect_url', '/user')
-
                 return redirect(conn, '/user')
         else:
             return easy_minify(conn, flask.render_template(skin_check(conn),
