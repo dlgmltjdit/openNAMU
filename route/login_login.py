@@ -1,4 +1,5 @@
 from .tool.func import *
+from flask import request  # 추가
 from urllib.parse import urlparse
 
 def login_login_2():
@@ -12,14 +13,14 @@ def login_login_2():
         if ban_check(None, 'login')[0] == 1:
             return re_error(conn, 0)
 
-        if flask.request.method == 'POST':
+        if request.method == 'POST':  # Flask의 request 객체 사용
             # CAPTCHA 검증
-            if captcha_post(conn, flask.request.form.get('g-recaptcha-response', flask.request.form.get('g-recaptcha', ''))) == 1:
+            if captcha_post(conn, request.form.get('g-recaptcha-response', request.form.get('g-recaptcha', ''))) == 1:
                 return re_error(conn, 13)
 
-            user_agent = flask.request.headers.get('User-Agent', '')
-            user_id = flask.request.form.get('id', '')
-            user_pw = flask.request.form.get('pw', '')
+            user_agent = request.headers.get('User-Agent', '')
+            user_id = request.form.get('id', '')
+            user_pw = request.form.get('pw', '')
 
             # 사용자 인증
             curs.execute(db_change("select data from user_set where id = ? and name = 'pw'"), [user_id])
@@ -58,7 +59,7 @@ def login_login_2():
                 return redirect(conn, redirect_url)
         else:
             # GET 요청 시 이전 URL 저장
-            referrer = flask.request.referrer
+            referrer = request.referrer  # Flask의 request 객체 사용
             if referrer and is_safe_url(referrer):
                 flask.session['redirect_url'] = referrer
             else:
