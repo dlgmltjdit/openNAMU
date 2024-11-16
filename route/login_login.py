@@ -1,5 +1,4 @@
 from .tool.func import *
-from urllib.parse import urlparse
 
 def login_login_2():
     with get_db_connect() as conn:
@@ -48,15 +47,8 @@ def login_login_2():
 
                 ua_plus(conn, user_id, ip, user_agent, get_time())
 
-                # 이전 페이지 URL 가져오기 및 검증
-                redirect_url = flask.session.get('redirect_url', '/user')
-
-                return redirect(conn, redirect_url)
+                return redirect(conn, '/user')
         else:
-            # GET 요청 시, 현재 URL 저장
-            referrer = flask.request.referrer
-            flask.session['redirect_url'] = referrer
-
             return easy_minify(conn, flask.render_template(skin_check(conn),
                 imp = [get_lang(conn, 'login'), wiki_set(conn), wiki_custom(conn), wiki_css([0, 0])],
                 data =  '''
