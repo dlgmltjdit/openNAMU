@@ -1,4 +1,5 @@
 from .tool.func import *
+from urllib.parse import urlparse
 
 def login_login_2():
     with get_db_connect() as conn:
@@ -82,6 +83,9 @@ def login_login_2():
 # 보안 검증 함수
 def is_safe_url(target):
     from urllib.parse import urlparse
+    if not target:
+        return False
     ref_url = urlparse(flask.request.host_url)
     test_url = urlparse(target)
+    # 유효한 스킴과 도메인 확인
     return test_url.scheme in ('http', 'https') and ref_url.netloc == test_url.netloc
