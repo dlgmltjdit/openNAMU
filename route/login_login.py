@@ -50,17 +50,12 @@ def login_login_2():
 
                 # 이전 페이지 URL 가져오기 및 검증
                 redirect_url = flask.session.get('redirect_url', '/user')
-                if not is_safe_url(redirect_url):
-                    redirect_url = '/user'  # 기본값 설정
 
                 return redirect(conn, redirect_url)
         else:
             # GET 요청 시, 현재 URL 저장
             referrer = flask.request.referrer
-            if referrer and is_safe_url(referrer):
-                flask.session['redirect_url'] = referrer
-            else:
-                flask.session['redirect_url'] = '/user'  # 기본값 설정
+            flask.session['redirect_url'] = referrer
 
             return easy_minify(conn, flask.render_template(skin_check(conn),
                 imp = [get_lang(conn, 'login'), wiki_set(conn), wiki_custom(conn), wiki_css([0, 0])],
@@ -79,13 +74,3 @@ def login_login_2():
                         ''',
                 menu = [['user', get_lang(conn, 'return')]]
             ))
-
-# 보안 검증 함수
-def is_safe_url(target):
-    from urllib.parse import urlparse
-    if not target:
-        return False
-    ref_url = urlparse(flask.request.host_url)
-    test_url = urlparse(target)
-    # 유효한 스킴과 도메인 확인
-    return test_url.scheme in ('http', 'https') and ref_url.netloc == test_url.netloc
