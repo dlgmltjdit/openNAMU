@@ -47,16 +47,19 @@ def login_login_2():
 
                 ua_plus(conn, user_id, ip, user_agent, get_time())
 
-                # 이전 페이지 URL 가져오기
+                # 이전 페이지 URL 가져오기 및 검증
                 redirect_url = flask.session.get('redirect_url', '/user')
-                # 보안 검증: 외부 URL은 기본값('/user')로 변경
                 if not is_safe_url(redirect_url):
-                    redirect_url = '/user'
+                    redirect_url = '/user'  # 기본값 설정
 
                 return redirect(conn, redirect_url)
         else:
             # GET 요청 시, 현재 URL 저장
-            flask.session['redirect_url'] = flask.request.referrer
+            referrer = flask.request.referrer
+            if referrer and is_safe_url(referrer):
+                flask.session['redirect_url'] = referrer
+            else:
+                flask.session['redirect_url'] = '/user'  # 기본값 설정
 
             return easy_minify(conn, flask.render_template(skin_check(conn),
                 imp = [get_lang(conn, 'login'), wiki_set(conn), wiki_custom(conn), wiki_css([0, 0])],
